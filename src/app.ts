@@ -4,7 +4,7 @@ const app = express();
 
 app.get("/", (req, res) => {
     res.status(200).json({
-        message: "welcome to tour manaagaement db"
+        message: "Welcome to PH tour management db"
     })
 })
 
