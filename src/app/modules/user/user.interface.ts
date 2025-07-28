@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 export interface IAuthProvider {
-    provider: string;
+    provider: "google" | "credentials";
     providerId: string
 }
 export enum Role {
@@ -19,8 +19,8 @@ export interface IUser {
     picture?: string;
     address?: string;
     isDeleted?: string;
-    isAcive?: "ACTIVE" | "INACTIVE" | "BLOCK";
-    isVerified?: string;
+    isActive?: "ACTIVE" | "INACTIVE" | "BLOCK";
+    isVerified?: boolean;
     auths: IAuthProvider[];
     role: Role;
     bookings?: Types.ObjectId[];

@@ -2,6 +2,7 @@ import { Server } from "http"
 import mongoose from "mongoose";
 import app from "./app";
 import dotenv from 'dotenv'
+import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
 
 dotenv.config()
 
@@ -21,7 +22,10 @@ const startServer = async () => {
     }
 }
 
-startServer();
+(async () => {
+    await startServer()
+    await seedSuperAdmin()
+})()
 
 // "Unhandled rejection"
 process.on("unhandledRejection", (err) => {
