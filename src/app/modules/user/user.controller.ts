@@ -36,7 +36,7 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.params.id;
         // const token = req.headers.authorization
-        // const verifiedToken = verifyToken(token as string, process.env.JWT_SECRET as string) as JwtPayload
+        // const verifiedToken = verifyToken(token as string, process.env.JWT_ACCESS_SECRET as string) as JwtPayload
 
         const verifiedToken = req.user;
 
