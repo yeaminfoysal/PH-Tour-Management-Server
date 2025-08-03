@@ -1,10 +1,9 @@
 import { Server } from "http"
 import mongoose from "mongoose";
-import app from "./app";
 import dotenv from 'dotenv'
-import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
-
 dotenv.config()
+import app from "./app";
+import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
 
 let server: Server
 

@@ -4,9 +4,18 @@ import { UserRoutes } from "./app/modules/user/user.route";
 import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
 import { authRoutes } from "./app/modules/auth/auth.route";
 import cookieParser from "cookie-parser"
+import expressSession from "express-session"
+import passport from "passport";
+import "./app/config/passport";
 
 const app = express();
-
+app.use(expressSession({
+    secret: process.env.EXPRESS_SESSION_SECRET as string,
+    resave: false,
+    saveUninitialized: false
+}))
+app.use(passport.initialize());
+app.use(passport.session())
 app.use(cookieParser())
 app.use(express.json());
 app.use(cors())
