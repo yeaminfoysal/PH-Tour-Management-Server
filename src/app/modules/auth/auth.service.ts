@@ -1,7 +1,7 @@
+
 import { JwtPayload } from "jsonwebtoken";
 import AppError from "../../errorHelpers/AppError";
-import { createUserToken } from "../../utils/createUserTokens";
-import { generateToken, verifyToken } from "../../utils/jwt";
+import { createNewAccessToken, createUserToken } from "../../utils/createUserTokens";
 import { IUser } from "../user/user.interface";
 import { User } from "../user/user.model";
 import bcryptjs from "bcryptjs"
@@ -45,35 +45,34 @@ const credentialsLogin = async (payload: Partial<IUser>) => {
 
 const getNewAccessToken = async (refreshToken: string) => {
 
-    const verifiedRefreshToken = verifyToken(refreshToken, process.env.JWT_REFRESH_SECRET as string) as JwtPayload
-
-    const isUserExist = await User.findOne({ email: verifiedRefreshToken.email });
-
-    if (!isUserExist) {
-        throw new AppError(400, "User is exist")
-    }
-
-    if (isUserExist?.isActive === "BLOCK" || isUserExist?.isActive === "INACTIVE") {
-        throw new AppError(400, "User is blocked or inactive")
-    }
-    if (isUserExist?.isDeleted) {
-        throw new AppError(400, "User is deleted")
-    }
-
-    const jwtPayload = {
-        userId: isUserExist._id,
-        email: isUserExist.email,
-        role: isUserExist.role
-    }
-
-    const accessToken = generateToken(jwtPayload, process.env.JWT_ACCESS_SECRET as string, "1d")
+    const accessToken = await createNewAccessToken(refreshToken)
 
     return {
         accessToken
     }
 }
+const resetPassword = async (oldPassword: string, newPassword: string, decodedToken: JwtPayload) => {
+
+    const user = await User.findById(decodedToken.userId);
+
+    if (!user?.password) {
+        throw new AppError(401, "User not exist")
+    }
+
+    const isOldPasswordMatched = bcryptjs.compare(oldPassword, user.password)
+
+    if (!isOldPasswordMatched) {
+        throw new AppError(401, "Old password does not matched")
+    }
+
+    const newHashedPassword = await bcryptjs.hash(newPassword, 10)
+
+    user.password = newHashedPassword;
+    user.save()
+}
 
 export const authServices = {
     credentialsLogin,
-    getNewAccessToken
+    getNewAccessToken,
+    resetPassword
 }

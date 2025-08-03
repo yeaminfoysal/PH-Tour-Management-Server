@@ -39,6 +39,9 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
         // const verifiedToken = verifyToken(token as string, process.env.JWT_ACCESS_SECRET as string) as JwtPayload
 
         const verifiedToken = req.user;
+        if (!verifiedToken) {
+            return res.status(401).json({ message: "Unauthorized: Invalid or missing token" });
+        }
 
         const payload = req.body;
         const user = await UserServices.updateUser(userId, payload, verifiedToken)
