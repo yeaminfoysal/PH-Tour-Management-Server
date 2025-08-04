@@ -1,30 +1,66 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express";
 import { authServices } from "./auth.service";
 import { setCookie } from "../../utils/setCookie";
 import AppError from "../../errorHelpers/AppError";
 import { createUserToken } from "../../utils/createUserTokens";
+import passport from "passport";
 
 const credentialsLogin = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const loginInfo = await authServices.credentialsLogin(req.body);
+        // CUSTOM LOGIN
+        /*  const loginInfo = await authServices.credentialsLogin(req.body);
 
-        // res.cookie("refreshToken", loginInfo.refreshToken, {
-        //     httpOnly: true,
-        //     secure: false
-        // })
-        // res.cookie("accessToken", loginInfo.accessToken, {
-        //     httpOnly: true,
-        //     secure: false
-        // })
+            setCookie(res, loginInfo);
 
-        setCookie(res, loginInfo);
+            res.status(200).json({
+                message: "User login successfull",
+                success: true,
+                data: loginInfo
+            })
+        */
 
-        res.status(200).json({
-            message: "User login successfull",
-            success: true,
-            data: loginInfo
-        })
+
+        // PASSPORT LOCAL LOGIN
+        passport.authenticate("local", async (err: any, user: any, info: any) => {
+            if (err) {
+                // ❌❌❌❌❌
+                // throw new AppError(401, "Some error")
+                // next(err)
+                // return new AppError(401, err)
+
+                // ✅✅✅✅
+                // return next(err)
+                // console.log("from err");
+                return next(new AppError(401, err))
+            }
+
+            if (!user) {
+                // console.log("from !user");
+                // return new AppError(401, info.message)
+                return next(new AppError(401, info.message))
+            }
+
+            const userTokens = createUserToken(user)
+
+            // delete user.toObject().password
+
+            const { password: pass, ...rest } = user.toObject()
+
+            setCookie(res, userTokens)
+
+            res.status(200).json({
+                message: "User Logged In Successfully",
+                success: true,
+                data: {
+                    accessToken: userTokens.accessToken,
+                    refreshToken: userTokens.refreshToken,
+                    user: rest
+                }
+            })
+        })(req, res, next)
+
     } catch (error) {
         next(error)
     }
@@ -34,11 +70,6 @@ const getNewAccessToken = async (req: Request, res: Response, next: NextFunction
     try {
         const refreshToken = req.cookies.refreshToken;
         const tokenInfo = await authServices.getNewAccessToken(refreshToken);
-
-        // res.cookie("accessToken", tokenInfo.accessToken, {
-        //     httpOnly: true,
-        //     secure: false
-        // })
 
         setCookie(res, tokenInfo)
 
@@ -115,13 +146,6 @@ const googleCallbackController = async (req: Request, res: Response, next: NextF
     const tokenInfo = createUserToken(user)
 
     setCookie(res, tokenInfo)
-
-    // sendResponse(res, {
-    //     success: true,
-    //     statusCode: httpStatus.OK,
-    //     message: "Password Changed Successfully",
-    //     data: null,
-    // })
 
     res.redirect(`${process.env.FRONTEND_URL}/${redirectTo}`)
 }
