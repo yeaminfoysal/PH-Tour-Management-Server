@@ -1,7 +1,7 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
-// import { envVars } from "../config/env";
 import AppError from "../errorHelpers/AppError";
 import { handleCastError } from "../helpers/handleCastError";
 import { handlerDuplicateError } from "../helpers/handleDuplicateError";
@@ -9,6 +9,8 @@ import { handlerValidationError } from "../helpers/handlerValidationError";
 import { handlerZodError } from "../helpers/handlerZodError";
 
 export const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+
+    console.log(err);
 
     let errorSources: any = []
     let statusCode = 500
