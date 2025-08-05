@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import bcryptjs from "bcryptjs";
 import { IAuthProvider, IUser, Role } from "../modules/user/user.interface";
 import { User } from "../modules/user/user.model";

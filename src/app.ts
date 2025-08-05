@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser"
 import expressSession from "express-session"
 import passport from "passport";
 import "./app/config/passport";
+import { DivisionRoutes } from "./app/modules/division/division.route";
 
 const app = express();
 app.use(expressSession({
@@ -15,13 +16,14 @@ app.use(expressSession({
     saveUninitialized: false
 }))
 app.use(passport.initialize());
-app.use(passport.session())
-app.use(cookieParser())
+app.use(passport.session());
+app.use(cookieParser());
 app.use(express.json());
-app.use(cors())
+app.use(cors());
 
 app.use("/api/v1/user", UserRoutes)
 app.use("/api/v1/auth", authRoutes)
+app.use("/api/v1/division", DivisionRoutes)
 
 app.get("/", (req, res) => {
     res.status(200).json({
