@@ -23,9 +23,8 @@ const getAllTours = async (req: Request, res: Response, next: NextFunction) => {
         res.status(200).json({
             success: true,
             message: 'Tours retrieved successfully',
-            // data: result.data,
-            // meta: result.meta,
-            data:result.documents
+            data: result.data,
+            meta: result.meta,
         })
     } catch (error) {
         next(error)

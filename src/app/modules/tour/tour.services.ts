@@ -1,5 +1,4 @@
-// import { QueryBuilder } from "../../utils/QueryBuilder";
-// import { tourSearchableFields } from "./tour.constant";
+
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { ITour, ITourType } from "./tour.interface";
 import { Tour, TourType } from "./tour.model";
@@ -98,33 +97,27 @@ const createTour = async (payload: ITour) => {
 
 const getAllTours = async (query: Record<string, string>) => {
 
-
     const tourSearchableFields = ["title", "description", "location"]
 
     const queryBuilder = new QueryBuilder(Tour.find(), query)
 
-    const documents = await queryBuilder.filter().search(tourSearchableFields).modelQuery
+    // const documents = await queryBuilder.filter().search(tourSearchableFields).fields().paginate().modelQuery
 
-    // const tours = await queryBuilder
-    //     .search(tourSearchableFields)
-    //     .filter()
-    //     .sort()
-    //     .fields()
-    //     .paginate()
+    const tours = queryBuilder
+        .search(tourSearchableFields)
+        .filter()
+        .sort()
+        .fields()
+        .paginate()
 
-    // // const meta = await queryBuilder.getMeta()
+    // const meta = await queryBuilder.getMeta()
 
-    // const [data, meta] = await Promise.all([
-    //     tours.build(),
-    //     queryBuilder.getMeta()
-    // ])
+    const [data, meta] = await Promise.all([
+        tours.build(),
+        queryBuilder.getMeta()
+    ])
 
-
-    return {
-        // data,
-        // meta
-        documents
-    }
+    return { data, meta }
 
 };
 
