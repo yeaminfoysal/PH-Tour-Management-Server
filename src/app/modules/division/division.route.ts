@@ -8,7 +8,7 @@ export const DivisionRoutes = Router();
 
 DivisionRoutes.post(
     "/create",
-    checkAuth("ADMIN", "SUPERADMIN"),
+    checkAuth("ADMIN", "SUPER_ADMIN"),
     validateRequest(createDivisionSchema),
     DivisionController.createDivision
 );
@@ -16,12 +16,12 @@ DivisionRoutes.get("/", DivisionController.getAllDivisions);
 DivisionRoutes.get("/:slug", DivisionController.getSingleDivision);
 DivisionRoutes.patch(
     "/:id",
-    checkAuth("ADMIN", "SUPERADMIN"),
+    checkAuth("ADMIN", "SUPER_ADMIN"),
     validateRequest(updateDivisionSchema),
     DivisionController.updateDivision
 );
 DivisionRoutes.delete(
     "/:id",
-    checkAuth("ADMIN", "SUPERADMIN"),
+    checkAuth("ADMIN", "SUPER_ADMIN"),
     DivisionController.deleteDivision
 );
