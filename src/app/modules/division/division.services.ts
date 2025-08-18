@@ -8,7 +8,6 @@ const createDivision = async (payload: IDivision) => {
         throw new Error("A division with this name already exists.");
     }
 
-
     // const baseSlug = payload.name.toLowerCase().split(" ").join("-")
     // let slug = `${baseSlug}-division`
 

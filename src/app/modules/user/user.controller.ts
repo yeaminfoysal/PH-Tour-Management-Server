@@ -21,7 +21,7 @@ const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
         // throw new AppError(404, 'fake error')
         const result = await UserServices.getAllUsers();
 
-        res.status(201).json({
+        res.status(200).json({
             message: "Users retrived successfully",
             data: result
         })

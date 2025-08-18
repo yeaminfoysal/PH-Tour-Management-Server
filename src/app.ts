@@ -9,6 +9,8 @@ import passport from "passport";
 import "./app/config/passport";
 import { DivisionRoutes } from "./app/modules/division/division.route";
 import { TourRoutes } from "./app/modules/tour/tour.route";
+import { BookingRoute } from "./app/modules/booking/booking.route";
+import { PaymentRoute } from "./app/modules/payment/payment.route";
 
 const app = express();
 app.use(expressSession({
@@ -26,6 +28,8 @@ app.use("/api/v1/user", UserRoutes)
 app.use("/api/v1/auth", authRoutes)
 app.use("/api/v1/division", DivisionRoutes)
 app.use("/api/v1/tour", TourRoutes)
+app.use("/api/v1/booking", BookingRoute)
+app.use("/api/v1/payment", PaymentRoute)
 
 app.get("/", (req, res) => {
     res.status(200).json({
@@ -41,5 +45,6 @@ app.use((req: Request, res: Response) => {
         message: "Route not found"
     })
 })
+
 
 export default app;
