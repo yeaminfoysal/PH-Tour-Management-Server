@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // import AppError from "../../errorHelpers/AppError";
 import { BOOKING_STATUS } from "../booking/booking.interface";
 import { Booking } from "../booking/booking.model";
@@ -68,75 +67,67 @@ const successPayment = async (query: Record<string, string>) => {
     }
 };
 
-// const failPayment = async (query: Record<string, string>) => {
+const failPayment = async (query: Record<string, string>) => {
 
-//     // Update Booking Status to FAIL
-//     // Update Payment Status to FAIL
+    const session = await Booking.startSession();
+    session.startTransaction()
 
-//     const session = await Booking.startSession();
-//     session.startTransaction()
+    try {
 
-//     try {
+        const updatedPayment = await Payment.findOneAndUpdate({ transactionId: query.transactionId }, {
+            status: PAYMENT_STATUS.FAILED,
+        }, { new: true, runValidators: true, session: session })
 
+        await Booking
+            .findByIdAndUpdate(
+                updatedPayment?.booking,
+                { status: BOOKING_STATUS.FAILED },
+                { runValidators: true, session }
+            )
 
-//         const updatedPayment = await Payment.findOneAndUpdate({ transactionId: query.transactionId }, {
-//             status: PAYMENT_STATUS.FAILED,
-//         }, { new: true, runValidators: true, session: session })
+        await session.commitTransaction(); //transaction
+        session.endSession()
+        return { success: false, message: "Payment Failed" }
+    } catch (error) {
+        await session.abortTransaction(); // rollback
+        session.endSession()
+        // throw new AppError(httpStatus.BAD_REQUEST, error) ❌❌
+        throw error
+    }
+};
 
-//         await Booking
-//             .findByIdAndUpdate(
-//                 updatedPayment?.booking,
-//                 { status: BOOKING_STATUS.FAILED },
-//                 { runValidators: true, session }
-//             )
+const cancelPayment = async (query: Record<string, string>) => {
 
-//         await session.commitTransaction(); //transaction
-//         session.endSession()
-//         return { success: false, message: "Payment Failed" }
-//     } catch (error) {
-//         await session.abortTransaction(); // rollback
-//         session.endSession()
-//         // throw new AppError(httpStatus.BAD_REQUEST, error) ❌❌
-//         throw error
-//     }
-// };
-// const cancelPayment = async (query: Record<string, string>) => {
+    const session = await Booking.startSession();
+    session.startTransaction()
 
-//     // Update Booking Status to CANCEL
-//     // Update Payment Status to CANCEL
+    try {
+        const updatedPayment = await Payment.findOneAndUpdate({ transactionId: query.transactionId }, {
+            status: PAYMENT_STATUS.CANCELLED,
+        }, { runValidators: true, session: session })
 
-//     const session = await Booking.startSession();
-//     session.startTransaction()
+        await Booking
+            .findByIdAndUpdate(
+                updatedPayment?.booking,
+                { status: BOOKING_STATUS.CANCEL },
+                { runValidators: true, session }
+            )
 
-//     try {
-
-
-//         const updatedPayment = await Payment.findOneAndUpdate({ transactionId: query.transactionId }, {
-//             status: PAYMENT_STATUS.CANCELLED,
-//         }, { runValidators: true, session: session })
-
-//         await Booking
-//             .findByIdAndUpdate(
-//                 updatedPayment?.booking,
-//                 { status: BOOKING_STATUS.CANCEL },
-//                 { runValidators: true, session }
-//             )
-
-//         await session.commitTransaction(); //transaction
-//         session.endSession()
-//         return { success: false, message: "Payment Cancelled" }
-//     } catch (error) {
-//         await session.abortTransaction(); // rollback
-//         session.endSession()
-//         // throw new AppError(httpStatus.BAD_REQUEST, error) ❌❌
-//         throw error
-//     }
-// };
+        await session.commitTransaction(); //transaction
+        session.endSession()
+        return { success: false, message: "Payment Cancelled" }
+    } catch (error) {
+        await session.abortTransaction(); // rollback
+        session.endSession()
+        // throw new AppError(httpStatus.BAD_REQUEST, error) ❌❌
+        throw error
+    }
+};
 
 
 export const PaymentService = {
     // initPayment,
     successPayment,
-    // failPayment,
-    // cancelPayment,
+    failPayment,
+    cancelPayment,
 };
