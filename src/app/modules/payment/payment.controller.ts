@@ -1,6 +1,21 @@
 import { NextFunction, Request, Response } from "express";
 import { PaymentService } from "./payment.service";
 
+const initPayment = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const bookingId = req.params.bookingId;
+        const result = await PaymentService.initPayment(bookingId as string)
+
+        res.status(201).json({
+            success: true,
+            message: "Payment done successfully",
+            data: result,
+        })
+    } catch (error) {
+        next(error)
+    }
+};
+
 const successPayment = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const query = req.query
@@ -41,6 +56,7 @@ const cancelPayment = async (req: Request, res: Response, next: NextFunction) =>
 };
 
 export const PaymentController = {
+    initPayment,
     successPayment,
     failPayment,
     cancelPayment
