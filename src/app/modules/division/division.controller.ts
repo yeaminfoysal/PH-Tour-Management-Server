@@ -1,10 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import { DivisionService } from "./division.services";
-// import { DivisionService } from "./division.service";
+import { IDivision } from "./division.interface";
 
 const createDivision = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const result = await DivisionService.createDivision(req.body);
+        const payload: IDivision = {
+            ...req.body,
+            thumbnail: req.file?.path
+        }
+
+        const result = await DivisionService.createDivision(payload);
         res.status(201).json({
             success: true,
             message: "Division created",
@@ -28,6 +33,7 @@ const getAllDivisions = async (req: Request, res: Response, next: NextFunction) 
         next(error)
     }
 };
+
 const getSingleDivision = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const slug = req.params.slug
@@ -45,8 +51,12 @@ const getSingleDivision = async (req: Request, res: Response, next: NextFunction
 const updateDivision = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = req.params.id;
+        const payload: IDivision = {
+            ...req.body,
+            thumbnail: req.file?.path
+        }
 
-        const result = await DivisionService.updateDivision(id, req.body);
+        const result = await DivisionService.updateDivision(id, payload);
         res.status(200).json({
             success: true,
             message: "Division updated",
