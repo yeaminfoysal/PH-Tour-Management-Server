@@ -43,6 +43,13 @@ const getAllUsers = async () => {
     }
 };
 
+const getMe = async (userId: string) => {
+    const user = await User.findById(userId).select("-password");
+    return {
+        data: user
+    }
+};
+
 const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
 
     const ifUserExist = await User.findById(userId);
@@ -81,5 +88,6 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
 export const UserServices = {
     createUser,
     getAllUsers,
+    getMe,
     updateUser
 }

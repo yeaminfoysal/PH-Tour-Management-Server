@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { UserServices } from "./user.services";
+import { JwtPayload } from "jsonwebtoken";
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -16,6 +17,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
         next(err)
     }
 }
+
 const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
         // throw new AppError(404, 'fake error')
@@ -29,6 +31,20 @@ const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
         // eslint-disable-next-line no-console
         console.log(err);
         next(err)
+    }
+}
+
+const getMe = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const decodedToken = req.user as JwtPayload
+        const result = await UserServices.getMe(decodedToken.userId);
+
+        res.status(200).json({
+            message: "Your profile Retrieved Successfully",
+            data: result.data
+        })
+    } catch (error) {
+        next(error)
     }
 }
 
@@ -59,5 +75,6 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 export const UserControllers = {
     createUser,
     getAllUsers,
+    getMe,
     updateUser
 }

@@ -1,10 +1,16 @@
 
 import { NextFunction, Request, Response } from 'express';
 import { TourService } from './tour.services';
+import { ITour } from './tour.interface';
 
 const createTour = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const result = await TourService.createTour(req.body);
+        const payload = {
+            ...req.body,
+            images: (req.files as Express.Multer.File[]).map(file => file.path)
+        }
+        const result = await TourService.createTour(payload);
+
         res.status(201).json({
             success: true,
             message: 'Tour created successfully',
@@ -34,7 +40,12 @@ const getAllTours = async (req: Request, res: Response, next: NextFunction) => {
 const updateTour = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        const result = await TourService.updateTour(req.params.id, req.body);
+        const payload: ITour = {
+            ...req.body,
+            images: (req.files as Express.Multer.File[]).map(file => file.path)
+        }
+        
+        const result = await TourService.updateTour(req.params.id, payload);
 
         res.status(200).json({
             success: true,
@@ -60,6 +71,7 @@ const deleteTour = async (req: Request, res: Response, next: NextFunction) => {
         next(error)
     }
 };
+
 const getAllTourTypes = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const result = await TourService.getAllTourTypes();
@@ -73,7 +85,6 @@ const getAllTourTypes = async (req: Request, res: Response, next: NextFunction) 
         next(error)
     }
 };
-
 
 const createTourType = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -105,6 +116,7 @@ const updateTourType = async (req: Request, res: Response, next: NextFunction) =
         next(error)
     }
 };
+
 const deleteTourType = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
