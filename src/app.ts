@@ -11,6 +11,7 @@ import { DivisionRoutes } from "./app/modules/division/division.route";
 import { TourRoutes } from "./app/modules/tour/tour.route";
 import { BookingRoute } from "./app/modules/booking/booking.route";
 import { PaymentRoute } from "./app/modules/payment/payment.route";
+import { OtpRoute } from "./app/modules/otp/otp.route";
 
 const app = express();
 app.use(expressSession({
@@ -31,6 +32,7 @@ app.use("/api/v1/division", DivisionRoutes)
 app.use("/api/v1/tour", TourRoutes)
 app.use("/api/v1/booking", BookingRoute)
 app.use("/api/v1/payment", PaymentRoute)
+app.use("/api/v1/otp", OtpRoute)
 
 app.get("/", (req, res) => {
     res.status(200).json({
