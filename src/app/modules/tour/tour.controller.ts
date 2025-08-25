@@ -89,6 +89,7 @@ const getAllTourTypes = async (req: Request, res: Response, next: NextFunction) 
 const createTourType = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { name } = req.body;
+        
         const result = await TourService.createTourType(name);
 
         res.status(201).json({

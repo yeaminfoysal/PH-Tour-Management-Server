@@ -12,6 +12,7 @@ import { TourRoutes } from "./app/modules/tour/tour.route";
 import { BookingRoute } from "./app/modules/booking/booking.route";
 import { PaymentRoute } from "./app/modules/payment/payment.route";
 import { OtpRoute } from "./app/modules/otp/otp.route";
+import { StatsRoutes } from "./app/modules/stats/stats.route";
 
 const app = express();
 app.use(expressSession({
@@ -23,8 +24,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(cookieParser());
 app.use(express.json());
+app.set("trust proxy", 1);
 app.use(express.urlencoded({ extended: true }))
-app.use(cors());
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true
+}))
 
 app.use("/api/v1/user", UserRoutes)
 app.use("/api/v1/auth", authRoutes)
@@ -33,6 +38,7 @@ app.use("/api/v1/tour", TourRoutes)
 app.use("/api/v1/booking", BookingRoute)
 app.use("/api/v1/payment", PaymentRoute)
 app.use("/api/v1/otp", OtpRoute)
+app.use("/api/v1/stats", StatsRoutes)
 
 app.get("/", (req, res) => {
     res.status(200).json({
