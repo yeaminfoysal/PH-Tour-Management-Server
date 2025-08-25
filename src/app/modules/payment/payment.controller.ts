@@ -1,5 +1,7 @@
+/* eslint-disable no-console */
 import { NextFunction, Request, Response } from "express";
 import { PaymentService } from "./payment.service";
+import { SSLService } from "../sslCommerz/sslCommerz.service";
 
 const initPayment = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -70,10 +72,22 @@ const getInvoiceDownloadUrl = async (req: Request, res: Response, next: NextFunc
     }
 };
 
+const validatePayment = async (req: Request, res: Response) => {
+    console.log("sslcommerz ipn url body", req.body);
+
+    await SSLService.validatePayment(req.body)
+    res.status(200).json({
+        success: true,
+        message: "Payment Validated Successfully",
+        data: null,
+    })
+}
+
 export const PaymentController = {
     initPayment,
     successPayment,
     failPayment,
     cancelPayment,
-    getInvoiceDownloadUrl
+    getInvoiceDownloadUrl,
+    validatePayment
 };

@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AppError from "../../errorHelpers/AppError";
+import { Payment } from "../payment/payment.model";
 import { ISSLCommerz } from "./sslCommerz.interface";
 import axios from "axios"
 
@@ -53,6 +54,26 @@ const sslPaymentInit = async (payload: ISSLCommerz) => {
     }
 }
 
+const validatePayment = async (payload: any) => {
+    try {
+        const response = await axios({
+            method: "GET",
+            url: `${process.env.SSL_VALIDATION_API}?val_id=${payload.val_id}&store_id=${process.env.SSL_STORE_ID}&store_passwd=${process.env.SSL_STORE_PASS}`
+        })
+
+        console.log("sslcomeerz validate api response", response.data);
+
+        await Payment.updateOne(
+            { transactionId: payload.tran_id },
+            { paymentGatewayData: response.data })
+
+    } catch (error: any) {
+        console.log(error);
+        throw new AppError(401, `Payment Validation Error, ${error.message}`)
+    }
+}
+
 export const SSLService = {
-    sslPaymentInit
+    sslPaymentInit,
+    validatePayment
 }
