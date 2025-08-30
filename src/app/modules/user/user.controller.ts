@@ -4,6 +4,8 @@ import { JwtPayload } from "jsonwebtoken";
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
+
+        console.log(req.body);
         // throw new AppError(404, 'fake error')
         const user = await UserServices.createUser(req.body)
 
