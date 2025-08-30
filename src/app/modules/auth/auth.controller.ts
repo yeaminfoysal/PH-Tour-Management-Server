@@ -25,7 +25,8 @@ const credentialsLogin = async (req: Request, res: Response, next: NextFunction)
 
 
         // PASSPORT LOCAL LOGIN
-        passport.authenticate("local", async (err: any, user: any, info: any) => {
+        passport.authenticate("local", async (err: any, user: any, info: any, status: number) => {
+
             if (err) {
                 // ❌❌❌❌❌
                 // throw new AppError(401, "Some error")
@@ -35,13 +36,14 @@ const credentialsLogin = async (req: Request, res: Response, next: NextFunction)
                 // ✅✅✅✅
                 // return next(err)
                 // console.log("from err");
-                return next(new AppError(401, err))
+                // console.log("STATUS",status);
+                return next(new AppError(status ? status : 401, err))
             }
 
             if (!user) {
                 // console.log("from !user");
                 // return new AppError(401, info.message)
-                return next(new AppError(401, info.message))
+                return next(new AppError(info?.status ? info?.status : 404, info.message))
             }
 
             const userTokens = createUserToken(user)
@@ -139,7 +141,7 @@ const setPassword = async (req: Request, res: Response, next: NextFunction) => {
         await authServices.setPassword(userId, password);
 
         res.status(200).json({
-            message: "Password changed successfull",
+            message: "Password set successfull",
             success: true,
             data: null
         })

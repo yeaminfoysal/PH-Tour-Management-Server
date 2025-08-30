@@ -21,7 +21,13 @@ passport.use(
             // }
 
             if (!isUserExist) {
-                return done("User does not exist")
+                return done(null, false, { message: "User does not exist", status: 404 } as any);
+            }
+
+            const isPasswordMatched = await bcryptjs.compare(password as string, isUserExist.password as string)
+
+            if (!isPasswordMatched) {
+                return done(null, false, { message: "Password does not matched", status: 400 } as any)
             }
 
             if (!isUserExist.isVerified) {
@@ -48,12 +54,6 @@ passport.use(
             // if (isGoogleAuthenticated  && !isUserExist.password) {
             //     return done("You have authenticated through Google. So if you want to login with credentials, then at first login with google and set a password for your Gmail and then you can login with email and password.")
             // }
-
-            const isPasswordMatched = await bcryptjs.compare(password as string, isUserExist.password as string)
-
-            if (!isPasswordMatched) {
-                return done(null, false, { message: "Password does not match" })
-            }
 
             return done(null, isUserExist)
 
